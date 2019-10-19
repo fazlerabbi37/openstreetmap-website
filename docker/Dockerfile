@@ -13,14 +13,6 @@ RUN apt-get install -y --no-install-recommends ruby-dev libarchive-dev libmagick
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN npm install yarn phantomjs-prebuilt -g --unsafe-perm
 
-
-# Setup app location
-RUN mkdir -p /app
-WORKDIR /app
-
-# Install gems
-ADD Gemfile* /app/
-RUN bundle install
 # Setup local
 RUN sed -i -e 's/# en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/' /etc/locale.gen && \
     echo 'LANG="en_GB.UTF-8"'>/etc/default/locale && \
@@ -28,3 +20,19 @@ RUN sed -i -e 's/# en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/' /etc/locale.gen && \
     update-locale LANG=en_GB.UTF-8
 
 ENV LANG en_GB.UTF-8
+
+
+# Setup app location
+RUN mkdir -p /app
+WORKDIR /app
+
+# add unprivileged group and user
+RUN groupadd -r osm && useradd -r -g osm osm
+
+
+# Install gems
+ADD Gemfile* /app/
+RUN bundle install
+
+USER osm
+
