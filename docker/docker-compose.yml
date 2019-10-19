@@ -5,6 +5,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+    user: osm
     volumes:
       - ..:/app
     ports:
